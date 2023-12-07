@@ -11,7 +11,7 @@
 #include "prefixScan.hpp"
 
 // Single threaded implementation
-void prefixScanCPU(const float * indata, float * outdata, size_t size) {
+void prefixScanCPU(const float * indata, float * outdata, std::size_t size) {
     outdata[0] = 0;
     for(int i = 1 ; i < size ; i++) {
         outdata[i] = 0;
