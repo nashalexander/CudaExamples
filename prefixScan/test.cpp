@@ -4,17 +4,22 @@
 #include <cstring>
 #include <cstddef>
 #include <cstdio>
+#include <cmath>
 
 #define TEST_PASSED() printf("%s PASSED\n", __func__)
 
+constexpr float FLOAT_PRECISION = 1e-5;
+
 void testPrefixScanCPU() {
-    constexpr std::size_t size = 3;
-    constexpr float input[] = {2.5, 4.5, 6.2};
-    constexpr float expected[] = {0.0, 2.5, 7.0};
-    float output[3] = {0};
+    constexpr std::size_t size = 5;
+    constexpr float input[] = {2.5, 4.5, 6.2, 2.7, 1.9};
+    constexpr float expected[] = {0.0, 2.5, 7.0, 13.2, 15.9};
+    float output[size] = {0};
 
     prefixScanCPU(input, output, size);
-    assert(memcmp(expected, output, size) == 0);
+    for(int i = 0; i < size ; i++) {
+        assert(std::fabs(expected[i] - output[i]) < FLOAT_PRECISION);
+    }
 
     TEST_PASSED();
 }
@@ -33,7 +38,9 @@ void testPrefixScanSimpleGPU() {
     prefixScanCPU(input, expected, size);
 
     prefixScanSimpleGPU(input, output, size);
-    assert(memcmp(expected, output, size) == 0);
+    for(int i = 0; i < size ; i++) {
+        assert(std::fabs(expected[i] - output[i]) < FLOAT_PRECISION);
+    }
 
     TEST_PASSED();
 }

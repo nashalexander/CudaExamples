@@ -3,14 +3,14 @@
 __global__
 void prefixScanSimpleGPUImpl(const float * indata, float * outdata, std::size_t size) {
     int index = threadIdx.x + blockDim.x * blockIdx.x;
+    int stride = blockDim.x * gridDim.x;
 
-    if(index == 0) {
-        outdata[index] = 0;
-        return;
-    }
+    for(int iStride = index; iStride < size ; iStride += stride) {
+        outdata[iStride] = 0;
 
-    for(int i = 0 ; i < index ; i++) {
-        outdata[index] += indata[i];
+        for(int i = 0 ; i < iStride ; i++) {
+            outdata[iStride] += indata[i];
+        }
     }
 }
 
@@ -23,7 +23,7 @@ void prefixScanSimpleGPU(const float * indata, float * outdata, std::size_t size
     cudaMalloc(&d_outdata, bytes);
     cudaMemcpy(d_indata, indata, bytes, cudaMemcpyHostToDevice);
 
-    prefixScanSimpleGPUImpl<<<1024, 1024>>>(d_indata, d_outdata, size);
+    prefixScanSimpleGPUImpl<<<1, 1024>>>(d_indata, d_outdata, size);
     cudaMemcpy(outdata, d_outdata, bytes, cudaMemcpyDeviceToHost);
 
     cudaFree(d_indata);
